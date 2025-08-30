@@ -37,7 +37,7 @@ if not os.path.exists(UPLOAD_FOLDER):
     db.init_app(app)
 
 login_manager = LoginManager()
-login_manager.login_message = "Спочатку увійдіть у систему"
+login_manager.login_message = "Спочатку увійдіть у системe"
 login_manager.login_view = "sign_in"
 login_manager.init_app(app)
 
