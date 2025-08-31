@@ -56,15 +56,15 @@ login_manager.init_app(app)
 @login_manager.user_loader
 def load_user(user_id):
     # cache.clear()
-    user = cache.get(user_id)
-    if user:
-        user = pickle.loads(user)
-        print("Дані з кешу")
-    else:
-        user = User.query.filter_by(id=user_id).first_or_404()
-        cache.set(user_id, pickle.dumps(user))
-        print("Пішов запит до бази даних")
-    return user
+    # user = cache.get(user_id)
+    # if user:
+    #     user = pickle.loads(user)
+    #     print("Дані з кешу")
+    # else:
+    #     user = User.query.filter_by(id=user_id).first_or_404()
+    #     cache.set(user_id, pickle.dumps(user))
+    #     print("Пішов запит до бази даних")
+    return User.query.filter_by(id=user_id).first_or_404()
 
 
 @app.route("/signUp/", methods=["GET", "POST"])
