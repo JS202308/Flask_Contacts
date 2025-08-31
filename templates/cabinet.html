@@ -5,7 +5,7 @@
 <h3>Ваш номер телефону: {{ current_user.phone or "не вказано" }}</h3>
 
 <h2>Список контактів</h2>
-{% if current_user.contacts %}
+{% if contacts %}
 <table class="table table-striped table-hover">
     <thead>
         <tr>
@@ -19,7 +19,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for contact in current_user.contacts %}
+        {% for contact in contacts %}
         <tr>
             <td>{{ contact.id }}</td>
             <td>{{ contact.first_name }}</td>

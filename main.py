@@ -1,4 +1,5 @@
 import os
+import pickle
 
 from uuid import uuid4
 from flask import Flask, render_template, url_for, flash, redirect, request
@@ -13,7 +14,7 @@ from forms import SigninForm, SignUpForm, ContactForm
 
 config = {          
     "CACHE_TYPE": "SimpleCache", 
-    "CACHE_DEFAULT_TIMEOUT": 300
+    "CACHE_DEFAULT_TIMEOUT": 30
 }
 
 
@@ -42,9 +43,9 @@ login_manager.login_view = "sign_in"
 login_manager.init_app(app)
 
 
-# with app.app_context():
-#     db.drop_all()
-#     db.create_all()
+with app.app_context():
+    db.drop_all()
+    db.create_all()
 
 # @cache.cached(Timeout=30)
 # @login_manager.user_loader
@@ -54,9 +55,16 @@ login_manager.init_app(app)
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.filter_by(id=user_id).first_or_404()
-
-
+    # cache.clear()
+    user = cache.get(user_id)
+    if user:
+        user = pickle.loads(user)
+        print("Дані з кешу")
+    else:
+        user = User.query.filter_by(id=user_id).first_or_404()
+        cache.set(user_id, pickle.dumps(user))
+        print("Пішов запит до бази даних")
+    return user
 
 
 @app.route("/signUp/", methods=["GET", "POST"])
@@ -102,10 +110,17 @@ def sign_in_view():  # поменяли имя функции
 
 @app.get("/")
 @login_required
-@cache.cached(timeout=30, query_string=True)
 def cabinet():
+    contacts = cache.get(f"contacts_{current_user.id}")
+    if contacts:
+        contacts = pickle.loads(contacts)
+        print("Контакти з кешу ")
+    else:
+        contacts = current_user.contacts
+        cache.set(f"contacts_{current_user.id}", pickle.dumps(contacts))
+        print("Контакти з бази даних")
     print("Функція запустилась")
-    return render_template("cabinet.html")
+    return render_template("cabinet.html", contacts=contacts)
 
 @app.get("/logout/")
 @login_required
