@@ -153,6 +153,7 @@ def add_contact():
         )
         db.session.add(contact)
         db.session.commit()
+        cache.clear()
         flash("Контакт успішно додано!")
         return redirect(url_for("cabinet"))
 
